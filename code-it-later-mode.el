@@ -18,7 +18,26 @@
   "code-it-later emacs mode"
   :group 'helm)
 
+;;:= NEXT: need to use this inside do-code-it-later
+(defcustom code-it-later-keywords nil
+  "the keywords options for code-it-later -k/--keywords"
+  :type '(repeat string)
+  :group 'code-it-later)
+
+;;:= TODO: need to use this inside do-code-it-later
+(defcustom code-it-later-filetypes nil
+  "the keywords options for code-it-later -f/--filetypes"
+  :type '(repeat string)
+  :group 'code-it-later)
+
+;;:= TODO: need to use this inside do-code-it-later
+(defcustom code-it-later-ignore-dirs nil
+  "the keywords options for code-it-later -x/--ignore-dir"
+  :type '(repeat string)
+  :group 'code-it-later)
+
 (defun format-to-emacs-buffer (responses)
+  "format the results from code-it-later"
   (cl-loop with results = '()
 		   for bread in responses
 		   for filename = (car bread)
@@ -42,6 +61,7 @@
           candidate)))
 
 (defun code-it-later--persistent-action (candidate)
+  "persistent-action of helm-async source"
   (let* ((file-line (helm-grep-split-line candidate))
 		 (filename (or (cl-first file-line) candidate))
 		 (line (cl-second file-line)))
@@ -80,7 +100,7 @@
   "async helm source for code-it-later")
 
 (defun do-code-it-later (dirs)
-  ""
+  "do the codeitlater as the shell command"
   (let ((proc (apply
 			   #'start-process-shell-command "code-it-later" nil
 			   (list (cl-loop with args = "codeitlater -O list "

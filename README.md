@@ -4,6 +4,10 @@ This mode for [code-it-later](https://github.com/ccqpein/code-it-later-rs) emacs
 
 ## Install ##
 
+**install code-it-later-rs**
+
+`cargo install code-it-later-rs`
+
 **use straight.el**
 
 ```elisp
