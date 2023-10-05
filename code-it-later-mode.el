@@ -4,7 +4,7 @@
 ;; Use helm framwork as user interface
 
 ;; Author: ccQpein
-;; URL: https://github.com/ccqpein/https://github.com/ccqpein/code-it-later-mode
+;; URL: https://github.com/ccqpein/code-it-later-mode
 ;; Version: 0.1.0
 ;; Keywords: code-it-later, helm
 ;; Package-Requires: ((helm "3") (cl-lib "0.7"))
