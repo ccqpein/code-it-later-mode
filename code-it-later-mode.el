@@ -99,15 +99,46 @@
    )
   "async helm source for code-it-later")
 
+(cl-defun make-code-it-later-command (dirs &optional keywords filetypes ignore-dirs)
+  "make codeitlater command"
+  (let ((comm "codeitlater -O list "))
+	(when keywords
+	  (setf comm
+			(concat comm
+					(mapconcat 'identity
+							   (cl-loop for kw in keywords
+										append (list "-k" kw))
+							   " ")
+					" ")))
+
+	(when filetypes
+	  (setf comm
+			(concat comm
+					(mapconcat 'identity
+							   (cl-loop for ft in filetypes
+										append (list "-f" ft))
+							   " ")
+					" ")))
+
+	(when ignore-dirs
+	  (setf comm
+			(concat comm
+					(mapconcat 'identity
+							   (cl-loop for ig in ignore-dirs
+										append (list "-x" ig))
+							   " ")
+					" ")))
+
+	(setf comm (concat comm (mapconcat 'identity dirs " ")))
+	
+	comm
+	))
+
 (defun do-code-it-later (dirs)
   "do the codeitlater as the shell command"
   (let ((proc (apply
 			   #'start-process-shell-command "code-it-later" nil
-			   (list (cl-loop with args = "codeitlater -O list "
-						 for d in dirs
-						 do (setf args (concat args d " "))
-						 finally (return args)
-						 )))))
+			   (list (make-code-it-later-command dirs)))))
 	(prog1 proc
 	  (set-process-sentinel
 	   proc
