@@ -134,11 +134,11 @@
 	comm
 	))
 
-(defun do-code-it-later (dirs)
+(defun do-code-it-later (dirs keywords filetypes ignore-dirs)
   "do the codeitlater as the shell command"
   (let ((proc (apply
 			   #'start-process-shell-command "code-it-later" nil
-			   (list (make-code-it-later-command dirs)))))
+			   (list (make-code-it-later-command dirs keywords filetypes ignore-dirs)))))
 	(prog1 proc
 	  (set-process-sentinel
 	   proc
@@ -160,14 +160,14 @@
 (defvar code-it-later-source nil
   "the helm source of code-it-later")
 
-(defun set-code-it-later-source (dirs)
+(defun set-code-it-later-source (dirs keywords filetypes ignore-dirs)
   "set source"
   (setf code-it-later-source
 		(helm-make-source "code-it-later"
 			'code-it-later-class
 		  :candidates-process
 		  (lambda ()
-			(let ((proc (do-code-it-later dirs)
+			(let ((proc (do-code-it-later dirs keywords filetypes ignore-dirs)
 						))
 			  proc))
 		  :header-name
@@ -175,14 +175,57 @@
 		  :follow (and helm-follow-mode-persistent 1)
 		  )))
 
+(defun code-it-later--prompt-keywords ()
+  (split-string (read-string "input the keyword(s): ") "[ |, *]+" t))
+
+(defun code-it-later--prompt-filetypes ()
+  (split-string (read-string "input the filetype(s): ") "[ |, *]+" t))
+
+(defun code-it-later--prompt-ignore-dirs ()
+  (split-string (read-string "input the ignore-dir(s): ") "[ |, *]+" t))
+
+(cl-defun code-it-later--prompt ()
+  (let ((keywords code-it-later-keywords)
+		(filetypes code-it-later-filetypes)
+		(ignore-dirs code-it-later-ignore-dirs)
+		(all-args (helm :sources (helm-build-sync-source "Pick the arguments:"
+								   :candidates '(keywords filetypes ignore-dirs)
+								   :fuzzy-match t
+								   :action (lambda (candidate) (helm-marked-candidates))
+								   )
+						:buffer "*code-it-later arguments*")))
+	
+	(cl-loop for a in all-args
+			 do (cond ((string= "keywords" a)
+					   (setf keywords (code-it-later--prompt-keywords)))
+					  ((string= "filetypes" a)
+					   (setf filetypes (code-it-later--prompt-filetypes)))
+					  ((string= "ignore-dirs" a)
+					   (setf ignore-dirs (code-it-later--prompt-ignore-dirs)))
+					  (t nil)))
+
+	;; return the new argumes or default
+	(cl-values keywords filetypes ignore-dirs)
+	))
+
 ;;;###autoload
-(defun code-it-later ()
-  (interactive)
+(defun code-it-later (&optional arg)
+  (interactive "P")
   (let ((dirs (helm-read-file-name
-			  "Code it later in dir: "
-			  :default default-directory
-			  :marked-candidates t :must-match t)))
-	(set-code-it-later-source dirs)
+			   "Code it later in dir: "
+			   :default default-directory
+			   :marked-candidates t :must-match t))
+
+		;; binding with default custom values
+		(keywords code-it-later-keywords)
+		(filetypes code-it-later-filetypes)
+		(ignore-dirs code-it-later-ignore-dirs))
+
+	(if arg ;; C-u will rebinding these values
+		(cl-multiple-value-setq (keywords filetypes ignore-dirs)
+			(code-it-later--prompt)))
+	
+	(set-code-it-later-source dirs keywords filetypes ignore-dirs)
 	(helm :sources
 		  'code-it-later-source
           :buffer "*code-it-later*")))
