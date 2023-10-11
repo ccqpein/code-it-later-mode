@@ -18,22 +18,25 @@
   "code-it-later emacs mode"
   :group 'helm)
 
-;;:= NEXT: need to use this inside do-code-it-later
 (defcustom code-it-later-keywords nil
   "the keywords options for code-it-later -k/--keywords"
   :type '(repeat string)
   :group 'code-it-later)
 
-;;:= TODO: need to use this inside do-code-it-later
 (defcustom code-it-later-filetypes nil
   "the keywords options for code-it-later -f/--filetypes"
   :type '(repeat string)
   :group 'code-it-later)
 
-;;:= TODO: need to use this inside do-code-it-later
 (defcustom code-it-later-ignore-dirs nil
   "the keywords options for code-it-later -x/--ignore-dir"
   :type '(repeat string)
+  :group 'code-it-later)
+
+;;:= NEXT: need give some version control? this option only >= 0.7
+(defcustom code-it-later-config-file-directory nil
+  "the options for code-it-later -C/--config"
+  :type 'directory
   :group 'code-it-later)
 
 (defun format-to-emacs-buffer (responses)
@@ -136,17 +139,20 @@
 
 (defun do-code-it-later (dirs keywords filetypes ignore-dirs)
   "do the codeitlater as the shell command"
-  (let ((proc (apply
-			   #'start-process-shell-command "code-it-later" nil
-			   (list (make-code-it-later-command dirs keywords filetypes ignore-dirs)))))
+  (let* ((comm (make-code-it-later-command dirs keywords filetypes ignore-dirs))
+		 (proc (apply
+				#'start-process-shell-command "code-it-later" nil
+				(list comm))))
 	(prog1 proc
 	  (set-process-sentinel
 	   proc
 	   (lambda (process event)
-		 (when (string= event "finished\n")
-		   (with-helm-window
-			 ;; 
-			 )))))))
+		 (cond ((/= 0 (process-exit-status process))
+				(message "error on %s" comm))
+			   (t (when (string= event "finished\n")
+					(with-helm-window
+					  ;; 
+					  )))))))))
 
 (defun string-join (ss &optional join-str)
   (let ((j (if join-str join-str " ")))
@@ -175,6 +181,7 @@
 		  :follow (and helm-follow-mode-persistent 1)
 		  )))
 
+;;:= TODO: write the document
 (defun code-it-later--prompt-keywords ()
   (split-string (read-string "input the keyword(s): ") "[ |, *]+" t))
 
@@ -193,7 +200,7 @@
 								   :fuzzy-match t
 								   :action (lambda (candidate) (helm-marked-candidates))
 								   )
-						:buffer "*code-it-later arguments*")))
+						)))
 	
 	(cl-loop for a in all-args
 			 do (cond ((string= "keywords" a)
