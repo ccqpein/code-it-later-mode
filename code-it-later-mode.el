@@ -7,7 +7,11 @@
 ;; URL: https://github.com/ccqpein/code-it-later-mode
 ;; Version: 0.1.2
 ;; Keywords: code-it-later, helm
-;; Package-Requires: ((helm "3") (cl-lib "0.7"))
+;; Package-Requires: ((helm "3.0") (cl-lib "0.7"))
+
+;;; Commentary:
+
+;; This is the interactive mode for emacs with [codeitlater](https://github.com/ccqpein/code-it-later-rs)
 
 ;;; Code:
 
@@ -101,7 +105,7 @@
    )
   "async helm source for code-it-later")
 
-(cl-defun make-arguments (&key keywords filetypes ignore-dirs config-file-directory show-ignored)
+(cl-defun code-it-later--make-arguments (&key keywords filetypes ignore-dirs config-file-directory show-ignored)
   (let ((arguments ""))
 	(when (and config-file-directory (>= code-it-later-version 0.7))
 	  (setf arguments
@@ -143,10 +147,10 @@
 	arguments
 	))
 
-(cl-defun make-code-it-later-command (dirs &optional keywords filetypes ignore-dirs config-file-directory show-ignored)
+(cl-defun code-it-later--make-command (dirs &optional keywords filetypes ignore-dirs config-file-directory show-ignored)
   "make codeitlater command"
   (let ((comm "codeitlater -O list ")
-		(argumests (make-arguments :keywords keywords
+		(argumests (code-it-later--make-arguments :keywords keywords
 								   :filetypes filetypes
 								   :ignore-dirs ignore-dirs
 								   :config-file-directory config-file-directory
@@ -157,14 +161,14 @@
 	comm
 	))
 
-(defun do-code-it-later (dirs keywords filetypes ignore-dirs config-file-directory show-ignored)
+(defun code-it-later--do (dirs keywords filetypes ignore-dirs config-file-directory show-ignored)
   "do the codeitlater as the shell command"
-  (let* ((comm (make-code-it-later-command dirs
-										   keywords
-										   filetypes
-										   ignore-dirs
-										   config-file-directory
-										   show-ignored))
+  (let* ((comm (code-it-later--make-command dirs
+											keywords
+											filetypes
+											ignore-dirs
+											config-file-directory
+											show-ignored))
 		 (proc (apply
 				#'start-process-shell-command "code-it-later" nil
 				(list comm))))
@@ -179,7 +183,7 @@
 					  ;; 
 					  )))))))))
 
-(defun string-join (ss &optional join-str)
+(defun code-it-later--string-join (ss &optional join-str)
   (let ((j (if join-str join-str " ")))
 	(cl-loop with result = (car ss)
 			 for s in (cdr ss)
@@ -191,23 +195,23 @@
 (defvar code-it-later-source nil
   "the helm source of code-it-later")
 
-(defun set-code-it-later-source (dirs keywords filetypes ignore-dirs config-file-directory show-ignored)
+(defun code-it-later--set-source (dirs keywords filetypes ignore-dirs config-file-directory show-ignored)
   "set source"
   (setf code-it-later-source
 		(helm-make-source "code-it-later"
 			'code-it-later-class
 		  :candidates-process
 		  (lambda ()
-			(let ((proc (do-code-it-later dirs
-										  keywords
-										  filetypes
-										  ignore-dirs
-										  config-file-directory
-										  show-ignored)
+			(let ((proc (code-it-later--do dirs
+										   keywords
+										   filetypes
+										   ignore-dirs
+										   config-file-directory
+										   show-ignored)
 						))
 			  proc))
 		  :header-name
-		  (lambda (_) (concat "code it later at: " (string-join dirs " and ")))
+		  (lambda (_) (concat "code it later at: " (code-it-later--string-join dirs " and ")))
 		  :follow (and helm-follow-mode-persistent 1)
 		  )))
 
@@ -287,7 +291,7 @@
 		(cl-multiple-value-setq (keywords filetypes ignore-dirs config-file-directory show-ignored)
 		  (code-it-later--prompt)))
 	
-	(set-code-it-later-source dirs keywords filetypes ignore-dirs config-file-directory show-ignored)
+	(code-it-later--set-source dirs keywords filetypes ignore-dirs config-file-directory show-ignored)
 	(helm :sources
 		  'code-it-later-source
           :buffer "*code-it-later*")))
