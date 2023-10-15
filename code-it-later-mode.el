@@ -96,10 +96,10 @@ Argument CANDIDATE ."
 	(helm-highlight-current-line)))
 
 (defvar code-it-later--actions
-  "Not documented."
   (helm-make-actions
    "Open file"              #'code-it-later--action-find-file
-   "Open file other window" #'code-it-later--action-find-file-other-window))
+   "Open file other window" #'code-it-later--action-find-file-other-window)
+  "Actions of `code-it-later'.")
 
 (defclass code-it-later-class (helm-source-async)
   ((candidate-number-limit :initform 99999)
@@ -211,7 +211,6 @@ Optional argument JOIN-STR ."
 			 for s in (cdr ss)
 			 do (setf result (concat result j s))
 			 finally (return result))))
-
 
 (defvar code-it-later-source nil
   "The helm source of `code-it-later'.")
