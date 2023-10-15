@@ -119,7 +119,7 @@ Optional argument SHOW-IGNORED ."
 	(when (and config-file-directory (>= code-it-later-version 0.7))
 	  (setf arguments
 			(concat arguments "-C " config-file-directory " ")))
-   
+	
 	(when keywords
 	  (setf arguments
 			(concat arguments
@@ -152,7 +152,7 @@ Optional argument SHOW-IGNORED ."
 			(concat arguments
 					"--show-ignored"
 					" ")))
-   
+	
 	arguments))
 
 (cl-defun code-it-later--make-command (dirs &optional keywords filetypes ignore-dirs config-file-directory show-ignored)
@@ -165,10 +165,10 @@ Optional argument CONFIG-FILE-DIRECTORY .
 Optional argument SHOW-IGNORED ."
   (let ((comm "codeitlater -O list ")
 		(argumests (code-it-later--make-arguments :keywords keywords
-								   :filetypes filetypes
-								   :ignore-dirs ignore-dirs
-								   :config-file-directory config-file-directory
-								   :show-ignored show-ignored)))
+												  :filetypes filetypes
+												  :ignore-dirs ignore-dirs
+												  :config-file-directory config-file-directory
+												  :show-ignored show-ignored)))
 
 	(setf comm (concat comm argumests (mapconcat #'identity dirs " ")))
 	
