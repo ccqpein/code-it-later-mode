@@ -5,7 +5,7 @@
 
 ;; Author: ccQpein
 ;; URL: https://github.com/ccqpein/code-it-later-mode
-;; Version: 0.1.2
+;; Version: 0.1.3
 ;; Package-Requires: ((emacs "25.1") (helm "3.0"))
 
 ;;; Commentary:
@@ -49,7 +49,30 @@
 
 (defun code-it-later--version ()
   "Split and get the version of `code-it-later'."
-  (string-to-number (cadr (split-string (shell-command-to-string "codeitlater -V") " "))))
+  (mapcar #'string-to-number
+		  (split-string (replace-regexp-in-string
+						 "\n\\'" ""
+						 (cadr (split-string (shell-command-to-string "codeitlater -V") " ")))
+						"\\.")))
+
+(defun code-it-later-version-compare (first second)
+  "Compare version.
+Argument FIRST .
+Argument SECOND ."
+  (let ((max-len (max (length first)
+					  (length second))))
+	(cl-loop for i from 0 below max-len
+			 for x = (if (nth i first) (nth i first) 0)
+			 and y = (if (nth i second) (nth i second) 0)
+
+			 ;; first larger than second
+			 if (> x y) return 1
+
+			 ;; first smaller than second
+			 if (< x y) return -1
+
+			 ;; versions are equal
+			 finally return 0)))
 
 ;;:= TODO: keywords should give some color??
 (defun code-it-later--filter-one-by-one (candidate)
@@ -116,7 +139,7 @@ Optional argument IGNORE-DIRS .
 Optional argument CONFIG-FILE-DIRECTORY .
 Optional argument SHOW-IGNORED ."
   (let ((arguments ""))
-	(when (and config-file-directory (>= code-it-later-version 0.7))
+	(when config-file-directory
 	  (setf arguments
 			(concat arguments "-C " config-file-directory " ")))
 	
@@ -299,6 +322,11 @@ Optional argument ARG ."
   (interactive "P")
   (if (not code-it-later-version)
 	  (setf code-it-later-version (code-it-later--version)))
+
+  ;; min version support is 0.7
+  (when (< (code-it-later-version-compare code-it-later-version '(0 7)) 0)
+	(error "Minimum code-it-later version is 0.7"
+		   code-it-later-version))
   
   (let ((dirs (helm-read-file-name
 			   "Code it later in dir: "
