@@ -15,6 +15,8 @@
 ;;; Code:
 
 (require 'helm)
+(require 'helm-mode)
+(require 'helm-grep)
 
 (defgroup code-it-later nil
   "Code-it-later Emacs mode."
@@ -325,8 +327,7 @@ Optional argument ARG ."
 
   ;; min version support is 0.7
   (when (< (code-it-later-version-compare code-it-later-version '(0 7)) 0)
-	(error "Minimum code-it-later version is 0.7"
-		   code-it-later-version))
+	(error "Minimum code-it-later version is 0.7"))
   
   (let ((dirs (helm-read-file-name
 			   "Code it later in dir: "
