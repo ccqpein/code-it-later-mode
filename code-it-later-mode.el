@@ -1,16 +1,20 @@
 ;;; code-it-later-mode.el --- The code-it-later's mode -*- lexical-binding: t; -*-
 
-;; This emacs mode works with [code-it-later](https://github.com/ccqpein/code-it-later-rs).
-;; Use helm framwork as user interface
+;; Copyright (C) 2023-2023 ccQpein
 
 ;; Author: ccQpein
 ;; URL: https://github.com/ccqpein/code-it-later-mode
 ;; Version: 0.1.3
 ;; Package-Requires: ((emacs "25.1") (helm "3.0"))
 
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
 ;;; Commentary:
 
-;; This is the interactive mode for Emacs with [codeitlater](https://github.com/ccqpein/code-it-later-rs)
+;; This is the interactive mode for Emacs with codeitlater.
+;; Check the Github Repo `ccqpein/code-it-later-rs` for more details.
+
+;; This mode powered by helm framwork.
 
 ;;; Code:
 
