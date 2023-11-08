@@ -58,7 +58,10 @@
   (mapcar #'string-to-number
           (split-string (replace-regexp-in-string
                          "\n\\'" ""
-                         (cadr (split-string (shell-command-to-string "codeitlater -V") " ")))
+                         (cadr
+                          (split-string
+                           (shell-command-to-string "codeitlater -V")
+                           " ")))
                         "\\.")))
 
 (defun helm-code-it-later-version-compare (first second)
@@ -127,7 +130,8 @@ Argument CANDIDATE ."
 (defvar helm-code-it-later--actions
   (helm-make-actions
    "Open file"              #'helm-code-it-later--action-find-file
-   "Open file other window" #'helm-code-it-later--action-find-file-other-window)
+   "Open file other window"
+   #'helm-code-it-later--action-find-file-other-window)
   "Actions of `helm-code-it-later'.")
 
 (defclass helm-code-it-later-class (helm-source-async)
@@ -137,7 +141,9 @@ Argument CANDIDATE ."
    (action :initform 'helm-code-it-later--actions))
   "Async helm source for `helm-code-it-later'.")
 
-(cl-defun helm-code-it-later--make-arguments (&key keywords filetypes ignore-dirs config-file-directory show-ignored)
+(cl-defun helm-code-it-later--make-arguments
+    (&key keywords filetypes ignore-dirs config-file-directory
+          show-ignored)
   "Not documented.
 Optional argument KEYWORDS .
 Optional argument FILETYPES .
@@ -184,7 +190,9 @@ Optional argument SHOW-IGNORED ."
 
     arguments))
 
-(cl-defun helm-code-it-later--make-command (dirs &optional keywords filetypes ignore-dirs config-file-directory show-ignored)
+(cl-defun helm-code-it-later--make-command
+    (dirs &optional keywords filetypes ignore-dirs
+          config-file-directory show-ignored)
   "Make codeitlater command.
 Argument DIRS .
 Optional argument KEYWORDS .
@@ -193,17 +201,24 @@ Optional argument IGNORE-DIRS .
 Optional argument CONFIG-FILE-DIRECTORY .
 Optional argument SHOW-IGNORED ."
   (let ((comm "codeitlater -O list ")
-        (argumests (helm-code-it-later--make-arguments :keywords keywords
-                                                       :filetypes filetypes
-                                                       :ignore-dirs ignore-dirs
-                                                       :config-file-directory config-file-directory
-                                                       :show-ignored show-ignored)))
+        (argumests (helm-code-it-later--make-arguments :keywords
+                                                       keywords
+                                                       :filetypes
+                                                       filetypes
+                                                       :ignore-dirs
+                                                       ignore-dirs
+                                                       :config-file-directory
+                                                       config-file-directory
+                                                       :show-ignored
+                                                       show-ignored)))
 
     (setf comm (concat comm argumests (mapconcat #'identity dirs " ")))
 
     comm))
 
-(defun helm-code-it-later--do (dirs keywords filetypes ignore-dirs config-file-directory show-ignored)
+(defun helm-code-it-later--do
+    (dirs keywords filetypes ignore-dirs config-file-directory
+          show-ignored)
   "Do the codeitlater as the shell command.
 Argument DIRS .
 Argument KEYWORDS .
@@ -244,7 +259,9 @@ Optional argument JOIN-STR ."
 (defvar helm-code-it-later-source nil
   "The helm source of `code-it-later'.")
 
-(defun helm-code-it-later--set-source (dirs keywords filetypes ignore-dirs config-file-directory show-ignored)
+(defun helm-code-it-later--set-source
+    (dirs keywords filetypes ignore-dirs config-file-directory
+          show-ignored)
   "Set source.
 Argument DIRS .
 Argument KEYWORDS .
@@ -265,7 +282,9 @@ Argument SHOW-IGNORED ."
                                                 show-ignored)))
               proc))
           :header-name
-          (lambda (_) (concat "code it later at: " (helm-code-it-later--string-join dirs " and ")))
+          (lambda (_)
+            (concat "code it later at: "
+                    (helm-code-it-later--string-join dirs " and ")))
           :follow (and helm-follow-mode-persistent 1))))
 
 (defun helm-code-it-later--prompt-keywords ()
@@ -293,33 +312,42 @@ Argument SHOW-IGNORED ."
   (let ((keywords helm-code-it-later-keywords)
         (filetypes helm-code-it-later-filetypes)
         (ignore-dirs helm-code-it-later-ignore-dirs)
-        (config-file-directory helm-code-it-later-config-file-directory)
+        (config-file-directory
+         helm-code-it-later-config-file-directory)
         (show-ignored helm-code-it-later-show-ignored)
 
-        (all-args (helm :sources (helm-build-sync-source "Pick the arguments:"
+        (all-args (helm :sources (helm-build-sync-source
+                                     "Pick the arguments:"
                                    :candidates '(keywords
                                                  filetypes
                                                  ignore-dirs
                                                  config-file-directory
                                                  show-ignored)
                                    :fuzzy-match t
-                                   :action (lambda () (helm-marked-candidates))))))
+                                   :action
+                                   (lambda () (helm-marked-candidates))))))
 
     (cl-loop for a in all-args
              do (cond ((string= "keywords" a)
-                       (setf keywords (helm-code-it-later--prompt-keywords)))
+                       (setf keywords
+                             (helm-code-it-later--prompt-keywords)))
                       ((string= "filetypes" a)
-                       (setf filetypes (helm-code-it-later--prompt-filetypes)))
+                       (setf filetypes
+                             (helm-code-it-later--prompt-filetypes)))
                       ((string= "ignore-dirs" a)
-                       (setf ignore-dirs (helm-code-it-later--prompt-ignore-dirs)))
+                       (setf ignore-dirs
+                             (helm-code-it-later--prompt-ignore-dirs)))
                       ((string= "config-file-directory" a)
-                       (setf config-file-directory (helm-code-it-later--prompt-config-file-directory)))
+                       (setf config-file-directory
+                             (helm-code-it-later--prompt-config-file-directory)))
                       ((string= "show-ignored" a)
-                       (setf show-ignored (helm-code-it-later--prompt-show-ignored)))
+                       (setf show-ignored
+                             (helm-code-it-later--prompt-show-ignored)))
                       (t nil)))
 
     ;; return the new argumes or default
-    (cl-values keywords filetypes ignore-dirs config-file-directory show-ignored)))
+    (cl-values keywords filetypes ignore-dirs config-file-directory
+               show-ignored)))
 
 ;;;###autoload
 (defun helm-code-it-later (&optional arg)
@@ -330,7 +358,11 @@ Optional argument ARG ."
       (setf helm-code-it-later-version (helm-code-it-later--version)))
 
   ;; min version support is 0.7
-  (when (< (helm-code-it-later-version-compare helm-code-it-later-version '(0 7)) 0)
+  (when
+      (<
+       (helm-code-it-later-version-compare helm-code-it-later-version
+                                           '(0 7))
+       0)
     (error "Minimum helm-code-it-later version is 0.7"))
   
   (let ((dirs (helm-read-file-name
@@ -342,14 +374,19 @@ Optional argument ARG ."
         (keywords helm-code-it-later-keywords)
         (filetypes helm-code-it-later-filetypes)
         (ignore-dirs helm-code-it-later-ignore-dirs)
-        (config-file-directory helm-code-it-later-config-file-directory)
+        (config-file-directory
+         helm-code-it-later-config-file-directory)
         (show-ignored helm-code-it-later-show-ignored))
 
     (if arg ;; C-u will rebinding these values
-        (cl-multiple-value-setq (keywords filetypes ignore-dirs config-file-directory show-ignored)
+        (cl-multiple-value-setq
+            (keywords filetypes ignore-dirs config-file-directory
+                      show-ignored)
           (helm-code-it-later--prompt)))
 
-    (helm-code-it-later--set-source dirs keywords filetypes ignore-dirs config-file-directory show-ignored)
+    (helm-code-it-later--set-source dirs keywords filetypes
+                                    ignore-dirs config-file-directory
+                                    show-ignored)
     (helm :sources
           'helm-code-it-later-source
           :buffer "*code-it-later*")))
