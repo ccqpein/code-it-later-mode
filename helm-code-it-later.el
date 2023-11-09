@@ -66,8 +66,8 @@
 
 (defun helm-code-it-later-version-compare (first second)
   "Compare version.
-Argument FIRST .
-Argument SECOND ."
+Argument FIRST: the first version.
+Argument SECOND the second version."
   (let ((max-len (max (length first)
                       (length second))))
     (cl-loop for i from 0 below max-len
@@ -86,7 +86,7 @@ Argument SECOND ."
 ;;:= TODO: keywords should give some color??
 (defun helm-code-it-later--filter-one-by-one (candidate)
   "Async filter one by one function.
-Argument CANDIDATE."
+Argument CANDIDATE: single candidate from code-it-later."
   (let* ((split (helm-grep-split-line candidate))
          (file (nth 0 split))
          (lineno (nth 1 split))
@@ -100,7 +100,7 @@ Argument CANDIDATE."
 
 (defun helm-code-it-later--persistent-action (candidate)
   "Persistent-action of helm-async source.
-Argument CANDIDATE."
+Argument CANDIDATE: single candidate from code-it-later."
   (let* ((file-line (helm-grep-split-line candidate))
          (filename (or (cl-first file-line) candidate))
          (line (cl-second file-line)))
@@ -111,13 +111,13 @@ Argument CANDIDATE."
     (helm-highlight-current-line)))
 
 (defun helm-code-it-later--action-find-file (candidate)
-  "Not documented.
-Argument CANDIDATE ."
+  "Find-file action.
+Argument CANDIDATE: single candidate from code-it-later."
   (helm-code-it-later--persistent-action candidate))
 
 (defun helm-code-it-later--action-find-file-other-window (candidate)
-  "Not documented.
-Argument CANDIDATE ."
+  "Find-file-other-window action.
+Argument CANDIDATE: single candidate from code-it-later."
   (let* ((file-line (helm-grep-split-line candidate))
          (filename (or (cl-first file-line) candidate))
          (line (cl-second file-line)))
@@ -144,12 +144,12 @@ Argument CANDIDATE ."
 (cl-defun helm-code-it-later--make-arguments
     (&key keywords filetypes ignore-dirs config-file-directory
           show-ignored)
-  "Not documented.
-Optional argument KEYWORDS .
-Optional argument FILETYPES .
-Optional argument IGNORE-DIRS .
-Optional argument CONFIG-FILE-DIRECTORY .
-Optional argument SHOW-IGNORED ."
+  "Making the arguments for code-it-later.
+Optional argument KEYWORDS: -k arguments of code-it-later.
+Optional argument FILETYPES: -f arguments of code-it-later.
+Optional argument IGNORE-DIRS: -x arguments of code-it-later.
+Optional argument CONFIG-FILE-DIRECTORY: -C argument of code-it-later.
+Optional argument SHOW-IGNORED: --show-ignored argument of code-it-later."
   (let ((arguments ""))
     (when config-file-directory
       (setf arguments
@@ -194,12 +194,12 @@ Optional argument SHOW-IGNORED ."
     (dirs &optional keywords filetypes ignore-dirs
           config-file-directory show-ignored)
   "Make codeitlater command.
-Argument DIRS .
-Optional argument KEYWORDS .
-Optional argument FILETYPES .
-Optional argument IGNORE-DIRS .
-Optional argument CONFIG-FILE-DIRECTORY .
-Optional argument SHOW-IGNORED ."
+Argument DIRS that run code-it-later.
+Optional argument KEYWORDS: -k arguments of code-it-later.
+Optional argument FILETYPES: -f arguments of code-it-later.
+Optional argument IGNORE-DIRS: -x arguments of code-it-later.
+Optional argument CONFIG-FILE-DIRECTORY: -C argument of code-it-later.
+Optional argument SHOW-IGNORED: --show-ignored argument of code-it-later."
   (let ((comm "codeitlater -O list ")
         (argumests (helm-code-it-later--make-arguments :keywords
                                                        keywords
@@ -220,12 +220,12 @@ Optional argument SHOW-IGNORED ."
     (dirs keywords filetypes ignore-dirs config-file-directory
           show-ignored)
   "Do the codeitlater as the shell command.
-Argument DIRS .
-Argument KEYWORDS .
-Argument FILETYPES .
-Argument IGNORE-DIRS .
-Argument CONFIG-FILE-DIRECTORY .
-Argument SHOW-IGNORED ."
+Argument DIRS that run code-it-later.
+Argument KEYWORDS: -k arguments of code-it-later.
+Argument FILETYPES: -f arguments of code-it-later.
+Argument IGNORE-DIRS: -x arguments of code-it-later.
+Argument CONFIG-FILE-DIRECTORY: -C argument of code-it-later.
+Argument SHOW-IGNORED: --show-ignored argument of code-it-later."
   (let* ((comm (helm-code-it-later--make-command dirs
                                                  keywords
                                                  filetypes
@@ -248,8 +248,8 @@ Argument SHOW-IGNORED ."
 
 (defun helm-code-it-later--string-join (ss &optional join-str)
   "String join helper function.
-Argument SS .
-Optional argument JOIN-STR ."
+Argument SS: the list of strings.
+Optional argument JOIN-STR: join string."
   (let ((j (if join-str join-str " ")))
     (cl-loop with result = (car ss)
              for s in (cdr ss)
@@ -263,12 +263,12 @@ Optional argument JOIN-STR ."
     (dirs keywords filetypes ignore-dirs config-file-directory
           show-ignored)
   "Set source.
-Argument DIRS .
-Argument KEYWORDS .
-Argument FILETYPES .
-Argument IGNORE-DIRS .
-Argument CONFIG-FILE-DIRECTORY .
-Argument SHOW-IGNORED ."
+Argument DIRS that run code-it-later.
+Argument KEYWORDS: -k arguments of code-it-later.
+Argument FILETYPES: -f arguments of code-it-later.
+Argument IGNORE-DIRS: -x arguments of code-it-later.
+Argument CONFIG-FILE-DIRECTORY: -C argument of code-it-later.
+Argument SHOW-IGNORED: --show-ignored argument of code-it-later."
   (setf helm-code-it-later-source
         (helm-make-source "code-it-later"
             'helm-code-it-later-class
@@ -352,7 +352,7 @@ Argument SHOW-IGNORED ."
 ;;;###autoload
 (defun helm-code-it-later (&optional arg)
   "Major function.
-Optional argument ARG ."
+Optional argument ARG."
   (interactive "P")
   (if (not helm-code-it-later-version)
       (setf helm-code-it-later-version (helm-code-it-later--version)))
