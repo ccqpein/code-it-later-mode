@@ -325,7 +325,7 @@ Argument SHOW-IGNORED: --show-ignored argument of code-it-later."
                                                  show-ignored)
                                    :fuzzy-match t
                                    :action
-                                   (lambda () (helm-marked-candidates))))))
+                                   (lambda (_) (helm-marked-candidates))))))
 
     (cl-loop for a in all-args
              do (cond ((string= "keywords" a)
