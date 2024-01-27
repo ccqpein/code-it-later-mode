@@ -11,12 +11,12 @@ This mode for [code-it-later](https://github.com/ccqpein/code-it-later-rs) emacs
 **use straight.el**
 
 ```elisp
-(use-package helm-code-it-later
-  :straight (helm-code-it-later :type git :host github :repo "ccqpein/helm-code-it-later")
-  :commands helm-code-it-later
+(use-package code-it-later-mode
+  :straight (code-it-later-mode :type git :host github :repo "ccqpein/code-it-later-mode")
+  :commands code-it-later
   )
 ```
 
 ## Usage ##
 
-`M-x helm-code-it-later` and pick the dir or file you want to run `code-it-later`
+`M-x code-it-later` and pick the dir or file you want to run `code-it-later`
